@@ -2,8 +2,10 @@ import { motion } from 'framer-motion';
 import { FalconMascot, GeometricPattern, UAEFlagStripe, StarBurst, DubaiSkyline } from './UAEPatterns';
 import { STUDENT } from '../data/courseData';
 
+import { XP_PER_LEVEL } from '../data/courseData';
+
 export default function LandingPage({ onStart, studentData }) {
-  const xpPercent = Math.round((studentData.xp / 2000) * 100);
+  const xpPercent = Math.round((studentData.xp / XP_PER_LEVEL) * 100);
 
   return (
     <div className="min-h-screen relative overflow-hidden bg-uae-dark flex flex-col">
@@ -100,7 +102,7 @@ export default function LandingPage({ onStart, studentData }) {
             {/* XP Bar */}
             <div className="mb-1 flex justify-between text-xs text-white/60">
               <span>XP Progress</span>
-              <span>{studentData.xp} / 2000</span>
+              <span>{studentData.xp} / {XP_PER_LEVEL}</span>
             </div>
             <div className="h-3 bg-white/10 rounded-full overflow-hidden mb-4">
               <motion.div

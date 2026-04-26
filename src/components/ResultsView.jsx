@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { UAEFlagStripe, FalconMascot } from './UAEPatterns';
-import { BADGES } from '../data/courseData';
+import { BADGES, XP_PER_LEVEL } from '../data/courseData';
 
 function Confetti() {
   const particles = Array.from({ length: 40 }, (_, i) => ({
@@ -74,7 +74,7 @@ export default function ResultsView({ results, module, studentData, onContinue }
   const [newBadge, setNewBadge] = useState(null);
 
   const perf = PERFORMANCE_MSGS[results.stars] || PERFORMANCE_MSGS[0];
-  const xpPercent = Math.round((studentData.xp / 2000) * 100);
+  const xpPercent = Math.round((studentData.xp / XP_PER_LEVEL) * 100);
 
   useEffect(() => {
     const timer = setTimeout(() => setAnimateXP(true), 800);
@@ -184,12 +184,12 @@ export default function ResultsView({ results, module, studentData, onContinue }
             <div>
               <div className="flex justify-between text-xs text-white/40 mb-1">
                 <span>Level {studentData.level}</span>
-                <span>{studentData.xp} / 2000 XP</span>
+                <span>{studentData.xp} / {XP_PER_LEVEL} XP</span>
               </div>
               <div className="h-3 bg-white/10 rounded-full overflow-hidden">
                 <motion.div
                   className="h-full xp-bar-fill rounded-full"
-                  initial={{ width: `${Math.round(((studentData.xp - results.xpEarned) / 2000) * 100)}%` }}
+                  initial={{ width: `${Math.round(((studentData.xp - results.xpEarned) / XP_PER_LEVEL) * 100)}%` }}
                   animate={{ width: `${xpPercent}%` }}
                   transition={{ duration: 1.5, delay: 1, ease: 'easeOut' }}
                 />

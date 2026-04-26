@@ -5,6 +5,7 @@ import LearningPath from './components/LearningPath';
 import LessonView from './components/LessonView';
 import QuizView from './components/QuizView';
 import ResultsView from './components/ResultsView';
+import { XP_PER_LEVEL } from './data/courseData';
 
 const pageVariants = {
   initial: { opacity: 0, y: 20 },
@@ -37,7 +38,7 @@ export default function App() {
       ...prev,
       xp: newXP,
       totalStars: newStars,
-      level: Math.floor(newXP / 500) + 1,
+      level: Math.floor(newXP / XP_PER_LEVEL) + 1,
     }));
     setCurrentView('results');
   };

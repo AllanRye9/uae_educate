@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { MODULES } from '../data/courseData';
+import { MODULES, XP_PER_LEVEL } from '../data/courseData';
 import { UAEFlagStripe, GeometricPattern } from './UAEPatterns';
 
 function StarDisplay({ count, max = 3 }) {
@@ -138,7 +138,7 @@ function PathConnector({ completed }) {
 }
 
 export default function LearningPath({ studentData, onSelectModule, onBack }) {
-  const xpPercent = Math.round((studentData.xp / 2000) * 100);
+  const xpPercent = Math.round((studentData.xp / XP_PER_LEVEL) * 100);
 
   // Arrange modules in a winding snake pattern
   const rows = [
