@@ -31,7 +31,7 @@ export default function QuizView({ module, onComplete, onBack }) {
     const timer = setInterval(() => setTimeLeft(t => t - 1), 1000);
     return () => clearInterval(timer);
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [timeLeft, timerActive, answered]);
+  }, [timeLeft, timerActive, answered]); // playTimeUp/handleAnswer intentionally excluded — stable callbacks
 
   useEffect(() => {
     setTimeLeft(30);
