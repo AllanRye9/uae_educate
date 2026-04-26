@@ -11,7 +11,7 @@ export default function LandingPage({ onStart, studentData }) {
     <div className="min-h-screen relative overflow-hidden bg-uae-dark flex flex-col">
       {/* Animated starfield */}
       <div className="absolute inset-0 pointer-events-none">
-        <StarBurst count={60} width={800} height={600} />
+        <StarBurst count={80} width={1440} height={900} />
       </div>
 
       {/* UAE geometric pattern overlay */}
@@ -197,7 +197,7 @@ export default function LandingPage({ onStart, studentData }) {
         transition={{ duration: 1, delay: 0.5 }}
         className="relative z-10 w-full"
       >
-        <DubaiSkyline width={800} height={80} />
+        <DubaiSkyline height={100} />
       </motion.div>
 
       {/* UAE Flag Stripe at bottom */}
