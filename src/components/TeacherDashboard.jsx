@@ -55,14 +55,28 @@ function StatCard({ icon, label, value, color, delay }) {
   );
 }
 
-export default function TeacherDashboard({ onBack }) {
+export default function TeacherDashboard({ onBack, studentData }) {
   const { t } = useLanguage();
   const [activeTab, setActiveTab] = useState('overview');
 
-  const sortedStudents = [...CLASS_STUDENTS].sort((a, b) => b.xp - a.xp);
-  const avgXP = Math.round(CLASS_STUDENTS.reduce((s, st) => s + st.xp, 0) / CLASS_STUDENTS.length);
-  const avgAccuracy = Math.round(CLASS_STUDENTS.reduce((s, st) => s + st.accuracy, 0) / CLASS_STUDENTS.length);
-  const activeStudents = CLASS_STUDENTS.filter(s => s.streak >= 3).length;
+  // Build class list replacing the placeholder "You" entry with the real student
+  const classStudents = CLASS_STUDENTS.map(s =>
+    s.isYou
+      ? {
+          ...s,
+          name: studentData?.name ?? s.name,
+          avatar: studentData?.avatar ?? s.avatar,
+          xp: studentData?.xp ?? s.xp,
+          stars: studentData?.totalStars ?? s.stars,
+          streak: studentData?.streak ?? s.streak,
+        }
+      : s
+  );
+
+  const sortedStudents = [...classStudents].sort((a, b) => b.xp - a.xp);
+  const avgXP = Math.round(classStudents.reduce((s, st) => s + st.xp, 0) / classStudents.length);
+  const avgAccuracy = Math.round(classStudents.reduce((s, st) => s + st.accuracy, 0) / classStudents.length);
+  const activeStudents = classStudents.filter(s => s.streak >= 3).length;
 
   return (
     <div className="min-h-screen bg-uae-dark flex flex-col">
@@ -113,7 +127,7 @@ export default function TeacherDashboard({ onBack }) {
             <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
               {/* Stats row */}
               <div className="grid grid-cols-4 gap-2 mb-4">
-                <StatCard icon="👥" label="Students" value={CLASS_STUDENTS.length} color="#C8A840" delay={0.1} />
+                <StatCard icon="👥" label="Students" value={classStudents.length} color="#C8A840" delay={0.1} />
                 <StatCard icon="⚡" label="Avg XP" value={avgXP.toLocaleString()} color="#009A44" delay={0.15} />
                 <StatCard icon="🎯" label="Avg Score" value={`${avgAccuracy}%`} color="#CE1126" delay={0.2} />
                 <StatCard icon="🔥" label="Active" value={activeStudents} color="#FF6B00" delay={0.25} />
@@ -181,7 +195,7 @@ export default function TeacherDashboard({ onBack }) {
                 className="bg-uae-navy/60 border border-uae-red/20 rounded-xl p-4"
               >
                 <div className="text-uae-red text-sm font-bold mb-3">⚠️ Needs Attention</div>
-                {CLASS_STUDENTS.filter(s => s.accuracy < 75 || s.streak < 3).map(student => (
+                {classStudents.filter(s => s.accuracy < 75 || s.streak < 3).map(student => (
                   <div key={student.name} className="flex items-center gap-3 py-1.5 border-b border-white/5 last:border-0">
                     <span className="text-lg">{student.avatar}</span>
                     <div className="flex-1">
@@ -276,7 +290,7 @@ export default function TeacherDashboard({ onBack }) {
                         <div className="text-white text-sm font-semibold">{mod.title}</div>
                         <div className="text-white/40 text-xs mt-0.5">
                           {mod.completion > 0
-                            ? `${Math.round((mod.completion / 100) * CLASS_STUDENTS.length)} of ${CLASS_STUDENTS.length} students`
+                            ? `${Math.round((mod.completion / 100) * classStudents.length)} of ${classStudents.length} students`
                             : 'Not started yet'}
                         </div>
                       </div>

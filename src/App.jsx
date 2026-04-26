@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
 import LandingPage from './components/LandingPage';
 import LearningPath from './components/LearningPath';
@@ -7,11 +7,14 @@ import QuizView from './components/QuizView';
 import ResultsView from './components/ResultsView';
 import CourseSelector from './components/CourseSelector';
 import TeacherDashboard from './components/TeacherDashboard';
+import StudentOnboarding from './components/StudentOnboarding';
 import { LanguageProvider } from './context/LanguageContext';
 import { SoundProvider } from './context/SoundContext';
 import { XP_PER_LEVEL, PEARLS_PER_STAR, MODULES } from './data/courseData';
 import { GRADE4_SCIENCE_MODULES } from './data/grade4ScienceData';
 import { GRADE8_SCIENCE_MODULES } from './data/grade8ScienceData';
+
+const STORAGE_KEY = 'uae_edulearn_student';
 
 // Map course dataKey → modules array
 const COURSE_MODULES = {
@@ -28,8 +31,31 @@ const pageVariants = {
   exit: { opacity: 0, y: -20 },
 };
 
+const DEFAULT_STUDENT_DATA = {
+  name: 'Student',
+  avatar: '🦅',
+  preferredGrade: null,
+  xp: 0,
+  totalStars: 0,
+  streak: 0,
+  level: 1,
+  pearls: 0,
+  badges: [],
+};
+
+function loadSavedStudent() {
+  try {
+    const raw = localStorage.getItem(STORAGE_KEY);
+    return raw ? JSON.parse(raw) : null;
+  } catch {
+    return null;
+  }
+}
+
 function AppContent() {
-  const [currentView, setCurrentView] = useState('courseSelector');
+  const saved = loadSavedStudent();
+
+  const [currentView, setCurrentView] = useState(saved ? 'courseSelector' : 'onboarding');
   const [selectedCourse, setSelectedCourse] = useState(null);
   const [selectedModule, setSelectedModule] = useState(null);
   const [quizResults, setQuizResults] = useState(null);
@@ -37,14 +63,16 @@ function AppContent() {
   // Module statuses are tracked per-course in state, starting from courseData defaults
   const [moduleStatuses, setModuleStatuses] = useState({});
 
-  const [studentData, setStudentData] = useState({
-    xp: 1240,
-    totalStars: 18,
-    streak: 7,
-    level: 3,
-    pearls: 120,
-    badges: ['first_lesson', 'quiz_master', 'streak_7'],
-  });
+  const [studentData, setStudentData] = useState(saved ?? DEFAULT_STUDENT_DATA);
+
+  // Persist student data whenever it changes
+  useEffect(() => {
+    try {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(studentData));
+    } catch {
+      // ignore storage errors
+    }
+  }, [studentData]);
 
   // Get current modules (with runtime status overrides applied)
   const getCurrentModules = () => {
@@ -61,6 +89,11 @@ function AppContent() {
   const navigate = (view, data = null) => {
     if (data) setSelectedModule(data);
     setCurrentView(view);
+  };
+
+  const handleOnboardingComplete = ({ name, avatar, grade }) => {
+    setStudentData(prev => ({ ...prev, name, avatar, preferredGrade: grade }));
+    setCurrentView('courseSelector');
   };
 
   const handleSelectCourse = (course) => {
@@ -114,6 +147,11 @@ function AppContent() {
   return (
     <div className="min-h-screen bg-uae-dark overflow-x-hidden">
       <AnimatePresence mode="wait">
+        {currentView === 'onboarding' && (
+          <motion.div key="onboarding" variants={pageVariants} initial="initial" animate="animate" exit="exit" transition={{ duration: 0.4 }}>
+            <StudentOnboarding onComplete={handleOnboardingComplete} />
+          </motion.div>
+        )}
         {currentView === 'courseSelector' && (
           <motion.div key="courseSelector" variants={pageVariants} initial="initial" animate="animate" exit="exit" transition={{ duration: 0.4 }}>
             <CourseSelector onSelectCourse={handleSelectCourse} studentData={studentData} />
@@ -171,7 +209,7 @@ function AppContent() {
         )}
         {currentView === 'teacher' && (
           <motion.div key="teacher" variants={pageVariants} initial="initial" animate="animate" exit="exit" transition={{ duration: 0.4 }}>
-            <TeacherDashboard onBack={() => navigate('landing')} />
+            <TeacherDashboard onBack={() => navigate('landing')} studentData={studentData} />
           </motion.div>
         )}
       </AnimatePresence>
