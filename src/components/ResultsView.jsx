@@ -1,7 +1,8 @@
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { UAEFlagStripe, FalconMascot } from './UAEPatterns';
-import { BADGES, XP_PER_LEVEL } from '../data/courseData';
+import { BADGES, XP_PER_LEVEL, PEARLS_PER_STAR } from '../data/courseData';
+import { useSound } from '../context/SoundContext';
 
 function Confetti() {
   const particles = Array.from({ length: 40 }, (_, i) => ({
@@ -72,17 +73,23 @@ export default function ResultsView({ results, module, studentData, onContinue }
   const [showConfetti, setShowConfetti] = useState(results.stars >= 2);
   const [animateXP, setAnimateXP] = useState(false);
   const [newBadge, setNewBadge] = useState(null);
+  const { playStar, playXP } = useSound();
 
   const perf = PERFORMANCE_MSGS[results.stars] || PERFORMANCE_MSGS[0];
   const xpPercent = Math.round((studentData.xp / XP_PER_LEVEL) * 100);
+  const pearlsEarned = results.stars * PEARLS_PER_STAR;
 
   useEffect(() => {
-    const timer = setTimeout(() => setAnimateXP(true), 800);
+    const timer = setTimeout(() => {
+      setAnimateXP(true);
+      playXP();
+      if (results.stars > 0) setTimeout(playStar, 600);
+    }, 800);
     if (results.perfectScore) {
       setNewBadge(BADGES.quiz_master);
     }
     return () => clearTimeout(timer);
-  }, [results.perfectScore]);
+  }, [results.perfectScore, results.stars, playXP, playStar]);
 
   useEffect(() => {
     if (showConfetti) {
@@ -179,6 +186,20 @@ export default function ResultsView({ results, module, studentData, onContinue }
                 <div className="text-white/40 text-xs mt-1">Rating</div>
               </div>
             </div>
+
+            {/* Pearl Points earned */}
+            {pearlsEarned > 0 && (
+              <motion.div
+                initial={{ opacity: 0, scale: 0.8 }}
+                animate={{ opacity: animateXP ? 1 : 0, scale: animateXP ? 1 : 0.8 }}
+                transition={{ delay: 0.3 }}
+                className="flex items-center justify-center gap-2 mb-4 py-2 rounded-xl"
+                style={{ background: 'rgba(200,168,64,0.1)', border: '1px solid rgba(200,168,64,0.3)' }}
+              >
+                <span className="text-xl">🪙</span>
+                <span className="text-uae-gold font-bold">+{pearlsEarned} Pearl Points earned!</span>
+              </motion.div>
+            )}
 
             {/* New XP bar */}
             <div>

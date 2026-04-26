@@ -1,7 +1,9 @@
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { MODULES, XP_PER_LEVEL } from '../data/courseData';
+import { XP_PER_LEVEL } from '../data/courseData';
 import { UAEFlagStripe, GeometricPattern } from './UAEPatterns';
+import { useLanguage } from '../context/LanguageContext';
+import { useSound } from '../context/SoundContext';
 
 function StarDisplay({ count, max = 3 }) {
   return (
@@ -14,6 +16,7 @@ function StarDisplay({ count, max = 3 }) {
 }
 
 function ModuleNode({ module, index, onSelect }) {
+  const { playClick } = useSound();
   const isLocked = module.status === 'locked';
   const isCompleted = module.status === 'completed';
   const isActive = module.status === 'active';
@@ -43,7 +46,7 @@ function ModuleNode({ module, index, onSelect }) {
 
       {/* Node button */}
       <motion.button
-        onClick={() => !isLocked && onSelect(module)}
+        onClick={() => { if (!isLocked) { playClick(); onSelect(module); } }}
         className="relative flex flex-col items-center"
         whileHover={!isLocked ? { scale: 1.1 } : {}}
         whileTap={!isLocked ? { scale: 0.95 } : {}}
@@ -137,15 +140,80 @@ function PathConnector({ completed }) {
   );
 }
 
-export default function LearningPath({ studentData, onSelectModule, onBack }) {
+function DailyChallengeWidget({ onTake, t }) {
+  const [done, setDone] = useState(false);
+  const { playClick } = useSound();
+
+  const handleTake = () => {
+    playClick();
+    setDone(true);
+    onTake?.();
+  };
+
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 10 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ delay: 1.0 }}
+      className="mt-4 rounded-xl p-4 relative overflow-hidden"
+      style={{
+        background: 'linear-gradient(135deg, rgba(200,168,64,0.15), rgba(200,168,64,0.05))',
+        border: '1px solid rgba(200,168,64,0.3)',
+        boxShadow: '0 0 20px rgba(200,168,64,0.1)',
+      }}
+    >
+      <div className="flex items-center justify-between">
+        <div>
+          <div className="text-uae-gold text-sm font-bold flex items-center gap-2">
+            {t('dailyChallenge')}
+            {!done && (
+              <span
+                className="text-xs px-2 py-0.5 rounded-full animate-pulse"
+                style={{ background: 'rgba(206,17,38,0.3)', color: '#CE1126' }}
+              >
+                NEW
+              </span>
+            )}
+          </div>
+          <div className="text-white/50 text-xs mt-0.5">{t('dailyChallengeDesc')}</div>
+          <div className="flex items-center gap-1 mt-1 text-xs text-uae-gold/70">
+            <span>🪙</span><span>+30 Pearl Points bonus</span>
+          </div>
+        </div>
+        {!done ? (
+          <motion.button
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
+            onClick={handleTake}
+            className="px-4 py-2 rounded-xl text-sm font-bold text-uae-dark"
+            style={{ background: 'linear-gradient(135deg, #C8A840, #FFD700)' }}
+          >
+            {t('takeDailyChallenge')}
+          </motion.button>
+        ) : (
+          <div className="text-uae-green text-sm font-bold">✓ Completed!</div>
+        )}
+      </div>
+      {/* Decorative pearl */}
+      <div className="absolute -right-4 -bottom-4 text-6xl opacity-10 pointer-events-none">🪙</div>
+    </motion.div>
+  );
+}
+
+export default function LearningPath({ studentData, modules, course, onSelectModule, onBack }) {
+  const { t, lang } = useLanguage();
   const xpPercent = Math.round((studentData.xp / XP_PER_LEVEL) * 100);
 
-  // Arrange modules in a winding snake pattern
-  const rows = [
-    [MODULES[0], MODULES[1]],
-    [MODULES[2], MODULES[3]],
-    [MODULES[4], MODULES[5]],
-  ];
+  // Arrange modules in a winding snake pattern (pairs of 2)
+  const rows = [];
+  for (let i = 0; i < modules.length; i += 2) {
+    rows.push(modules.slice(i, i + 2));
+  }
+
+  const subjectLabel = course
+    ? (lang === 'ar' ? (course.subject === 'Mathematics' ? 'الرياضيات' : 'العلوم') : course.subject)
+    : 'Algebra';
+  const gradeLabel = course ? course.grade : 'Grade 8';
 
   return (
     <div className="min-h-screen bg-uae-dark relative overflow-hidden">
@@ -166,14 +234,17 @@ export default function LearningPath({ studentData, onSelectModule, onBack }) {
               onClick={onBack}
               className="text-uae-gold/70 hover:text-uae-gold text-sm flex items-center gap-1 transition-colors"
             >
-              ← Back
+              {t('back')}
             </button>
             <div className="text-center">
-              <div className="text-white font-bold text-sm">Grade 8 · Algebra</div>
-              <div className="text-uae-gold/60 text-xs">Learning Journey</div>
+              <div className="text-white font-bold text-sm">{gradeLabel} · {subjectLabel}</div>
+              <div className="text-uae-gold/60 text-xs">{t('learningJourney')}</div>
             </div>
-            <div className="flex items-center gap-1 text-sm">
+            <div className="flex items-center gap-2 text-sm">
               <span className="text-uae-gold font-bold">{studentData.streak}🔥</span>
+              <span className="text-uae-gold/60 text-xs flex items-center gap-0.5">
+                🪙{studentData.pearls ?? 0}
+              </span>
             </div>
           </div>
 
@@ -201,9 +272,9 @@ export default function LearningPath({ studentData, onSelectModule, onBack }) {
           animate={{ opacity: 1, y: 0 }}
           className="text-center mb-8"
         >
-          <h2 className="text-2xl font-bold shimmer-text">Your Learning Path</h2>
+          <h2 className="text-2xl font-bold shimmer-text">{t('yourLearningPath')}</h2>
           <p className="text-white/50 text-sm mt-1">
-            {MODULES.filter(m => m.status === 'completed').length} of {MODULES.length} modules completed
+            {modules.filter(m => m.status === 'completed').length} {t('of')} {modules.length} {t('modulesCompleted')}
           </p>
           {/* Progress bar */}
           <div className="mt-3 h-2 bg-white/10 rounded-full overflow-hidden max-w-xs mx-auto">
@@ -211,7 +282,7 @@ export default function LearningPath({ studentData, onSelectModule, onBack }) {
               className="h-full rounded-full"
               style={{ background: 'linear-gradient(90deg, #CE1126, #C8A840, #009A44)' }}
               initial={{ width: 0 }}
-              animate={{ width: `${(MODULES.filter(m => m.status === 'completed').length / MODULES.length) * 100}%` }}
+              animate={{ width: `${(modules.filter(m => m.status === 'completed').length / modules.length) * 100}%` }}
               transition={{ duration: 1.2, ease: 'easeOut' }}
             />
           </div>
@@ -248,26 +319,29 @@ export default function LearningPath({ studentData, onSelectModule, onBack }) {
           })}
         </div>
 
+        {/* Daily Challenge */}
+        <DailyChallengeWidget t={t} />
+
         {/* Legend */}
         <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ delay: 1.2 }}
-          className="mt-8 bg-uae-navy/40 border border-uae-gold/10 rounded-xl p-4"
+          className="mt-4 bg-uae-navy/40 border border-uae-gold/10 rounded-xl p-4"
         >
-          <div className="text-white/50 text-xs text-center mb-2">Module Status</div>
+          <div className="text-white/50 text-xs text-center mb-2">{t('moduleStatus')}</div>
           <div className="flex justify-center gap-6 text-xs">
             <div className="flex items-center gap-1.5">
               <div className="w-3 h-3 rounded-full bg-uae-green" />
-              <span className="text-white/60">Completed</span>
+              <span className="text-white/60">{t('completed')}</span>
             </div>
             <div className="flex items-center gap-1.5">
               <div className="w-3 h-3 rounded-full bg-uae-red animate-pulse" />
-              <span className="text-white/60">Active</span>
+              <span className="text-white/60">{t('active')}</span>
             </div>
             <div className="flex items-center gap-1.5">
               <div className="w-3 h-3 rounded-full bg-uae-navy border border-white/20" />
-              <span className="text-white/60">Locked</span>
+              <span className="text-white/60">{t('locked')}</span>
             </div>
           </div>
         </motion.div>
@@ -280,7 +354,7 @@ export default function LearningPath({ studentData, onSelectModule, onBack }) {
           className="mt-4 bg-uae-navy/40 border border-uae-gold/10 rounded-xl p-4"
         >
           <div className="text-uae-gold text-sm font-bold mb-3 flex items-center gap-2">
-            🏆 Class Leaderboard
+            {t('classLeaderboard')}
           </div>
           {[
             { name: 'Fatima Al Hassan', xp: 1580, avatar: '👩', rank: 1 },

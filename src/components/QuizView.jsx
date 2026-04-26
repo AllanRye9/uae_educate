@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { UAEFlagStripe } from './UAEPatterns';
+import { useSound } from '../context/SoundContext';
 
 const OPTION_LETTERS = ['A', 'B', 'C', 'D'];
 
@@ -14,6 +15,7 @@ export default function QuizView({ module, onComplete, onBack }) {
   const [timerActive, setTimerActive] = useState(true);
   const [xpEarned, setXpEarned] = useState(0);
   const [showExplanation, setShowExplanation] = useState(false);
+  const { playCorrect, playWrong, playTimeUp } = useSound();
 
   const questions = module.quiz;
   const question = questions[current];
@@ -22,6 +24,7 @@ export default function QuizView({ module, onComplete, onBack }) {
   useEffect(() => {
     if (!timerActive || answered) return;
     if (timeLeft <= 0) {
+      playTimeUp();
       handleAnswer(null);
       return;
     }
@@ -49,6 +52,12 @@ export default function QuizView({ module, onComplete, onBack }) {
     setXpEarned(prev => prev + xp);
     setScore(prev => prev + (isCorrect ? 1 : 0));
     setAnswers(prev => [...prev, { questionIdx: current, selected: idx, correct: isCorrect }]);
+
+    if (isCorrect) {
+      playCorrect();
+    } else {
+      playWrong();
+    }
 
     setTimeout(() => setShowExplanation(true), 400);
   };

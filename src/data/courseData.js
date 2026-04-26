@@ -1,4 +1,6 @@
 export const XP_PER_LEVEL = 2000;
+export const PEARLS_PER_STAR = 15;
+export const PEARLS_DAILY_CHALLENGE = 30;
 
 export const STUDENT = {
   name: "Ahmed Al Mansouri",
@@ -9,8 +11,65 @@ export const STUDENT = {
   xpToNext: 2000,
   streak: 7,
   totalStars: 18,
+  pearls: 120,
   badges: ["first_lesson", "quiz_master", "streak_7"],
 };
+
+// Course catalog — each entry identifies a course the platform offers
+export const COURSE_CATALOG = [
+  {
+    id: "grade8-math",
+    grade: "Grade 8",
+    gradeNum: 8,
+    subject: "Mathematics",
+    icon: "📐",
+    color: "#009A44",
+    banner: "🕌",
+    arabicTitle: "الجبر",
+    subtitle: "Algebra Adventure",
+    description: "Master algebra with UAE-themed problems",
+    dataKey: "grade8math",
+  },
+  {
+    id: "grade8-science",
+    grade: "Grade 8",
+    gradeNum: 8,
+    subject: "Science",
+    icon: "⚗️",
+    color: "#CE1126",
+    banner: "🔬",
+    arabicTitle: "العلوم",
+    subtitle: "Science Explorer",
+    description: "Explore cells, atoms, forces and more",
+    dataKey: "grade8science",
+  },
+  {
+    id: "grade4-math",
+    grade: "Grade 4",
+    gradeNum: 4,
+    subject: "Mathematics",
+    icon: "🔢",
+    color: "#C8A840",
+    banner: "🌴",
+    arabicTitle: "الرياضيات",
+    subtitle: "Math Quest",
+    description: "Fractions, geometry and problem solving",
+    dataKey: "grade4math",
+  },
+  {
+    id: "grade4-science",
+    grade: "Grade 4",
+    gradeNum: 4,
+    subject: "Science",
+    icon: "🌿",
+    color: "#3B82F6",
+    banner: "🦅",
+    arabicTitle: "علوم الطبيعة",
+    subtitle: "Nature Explorer",
+    description: "Ecosystems, energy, space and wildlife",
+    dataKey: "grade4science",
+  },
+];
 
 export const BADGES = {
   first_lesson: { name: "First Step", icon: "🌟", desc: "Completed your first lesson", color: "#FFD700" },
