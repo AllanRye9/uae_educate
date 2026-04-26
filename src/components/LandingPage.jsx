@@ -1,11 +1,20 @@
 import { motion } from 'framer-motion';
 import { FalconMascot, GeometricPattern, UAEFlagStripe, StarBurst, DubaiSkyline } from './UAEPatterns';
 import { STUDENT } from '../data/courseData';
-
 import { XP_PER_LEVEL } from '../data/courseData';
+import { useLanguage } from '../context/LanguageContext';
+import { useSound } from '../context/SoundContext';
 
-export default function LandingPage({ onStart, studentData }) {
+export default function LandingPage({ onStart, onChangeCourse, onTeacherDashboard, studentData, course }) {
   const xpPercent = Math.round((studentData.xp / XP_PER_LEVEL) * 100);
+  const { t, lang, toggleLang, isRTL } = useLanguage();
+  const { soundEnabled, toggleSound, playClick } = useSound();
+
+  const courseTitle = course
+    ? (lang === 'ar' ? course.arabicTitle : course.subtitle)
+    : 'Algebra Adventure';
+  const gradeLabel = course ? course.grade : 'Grade 8';
+  const subjectLabel = course ? (lang === 'ar' ? (course.subject === 'Mathematics' ? 'الرياضيات' : 'العلوم') : course.subject) : 'Math';
 
   return (
     <div className="min-h-screen relative overflow-hidden bg-uae-dark flex flex-col">
@@ -28,8 +37,51 @@ export default function LandingPage({ onStart, studentData }) {
       {/* UAE Flag Stripe at top */}
       <UAEFlagStripe height={6} />
 
+      {/* Top controls bar */}
+      <div className="flex items-center justify-between px-4 pt-3 pb-1 relative z-10">
+        {/* Sound toggle */}
+        <motion.button
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 0.5 }}
+          whileTap={{ scale: 0.9 }}
+          onClick={() => { toggleSound(); }}
+          className="w-9 h-9 rounded-full flex items-center justify-center text-base"
+          style={{ background: 'rgba(200,168,64,0.1)', border: '1px solid rgba(200,168,64,0.3)' }}
+          title={soundEnabled ? 'Mute sound' : 'Enable sound'}
+        >
+          {soundEnabled ? '🔊' : '🔇'}
+        </motion.button>
+
+        {/* Pearl Points */}
+        <motion.div
+          initial={{ opacity: 0, scale: 0.8 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ delay: 0.6 }}
+          className="flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold"
+          style={{ background: 'rgba(200,168,64,0.1)', border: '1px solid rgba(200,168,64,0.3)' }}
+        >
+          <span>🪙</span>
+          <span className="text-uae-gold">{studentData.pearls ?? 0}</span>
+          <span className="text-uae-gold/60">{t('pearls')}</span>
+        </motion.div>
+
+        {/* Language toggle */}
+        <motion.button
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 0.5 }}
+          whileTap={{ scale: 0.9 }}
+          onClick={() => { toggleLang(); playClick(); }}
+          className="px-3 py-1.5 rounded-full text-xs font-bold"
+          style={{ background: 'rgba(200,168,64,0.1)', border: '1px solid rgba(200,168,64,0.3)', color: '#C8A840' }}
+        >
+          {lang === 'en' ? 'عربي' : 'EN'}
+        </motion.button>
+      </div>
+
       {/* Main content */}
-      <div className="flex-1 flex flex-col items-center justify-center px-4 py-8 relative z-10">
+      <div className="flex-1 flex flex-col items-center justify-center px-4 py-4 relative z-10">
 
         {/* Arabic calligraphy header */}
         <motion.div
@@ -46,9 +98,11 @@ export default function LandingPage({ onStart, studentData }) {
             WebkitTextFillColor: 'transparent',
             animation: 'shimmer 3s linear infinite',
           }}>
-            الجبر
+            {course?.arabicTitle ?? 'الجبر'}
           </div>
-          <div className="text-uae-gold/60 text-sm tracking-widest uppercase">Al-Jabr · Algebra</div>
+          <div className="text-uae-gold/60 text-sm tracking-widest uppercase">
+            {course ? `${course.arabicTitle} · ${course.subtitle}` : 'Al-Jabr · Algebra'}
+          </div>
         </motion.div>
 
         {/* Falcon mascot */}
@@ -56,9 +110,9 @@ export default function LandingPage({ onStart, studentData }) {
           initial={{ scale: 0, rotate: -20 }}
           animate={{ scale: 1, rotate: 0 }}
           transition={{ type: 'spring', stiffness: 200, damping: 15, delay: 0.3 }}
-          className="my-4"
+          className="my-3"
         >
-          <FalconMascot size={130} animated={true} />
+          <FalconMascot size={110} animated={true} />
         </motion.div>
 
         {/* Title */}
@@ -66,13 +120,13 @@ export default function LandingPage({ onStart, studentData }) {
           initial={{ opacity: 0, scale: 0.8 }}
           animate={{ opacity: 1, scale: 1 }}
           transition={{ duration: 0.6, delay: 0.5 }}
-          className="text-center mb-6"
+          className="text-center mb-4"
         >
           <h1 className="text-4xl font-bold text-white mb-1">
-            Grade 8 <span className="shimmer-text">Math</span>
+            {gradeLabel} <span className="shimmer-text">{subjectLabel}</span>
           </h1>
-          <h2 className="text-2xl font-semibold text-uae-gold">Algebra Adventure</h2>
-          <p className="text-white/60 mt-2 text-sm">Powered by UAE Mathematics Curriculum</p>
+          <h2 className="text-2xl font-semibold text-uae-gold">{courseTitle}</h2>
+          <p className="text-white/60 mt-1 text-sm">{t('poweredBy')}</p>
         </motion.div>
 
         {/* Student card */}
@@ -80,7 +134,7 @@ export default function LandingPage({ onStart, studentData }) {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6, delay: 0.7 }}
-          className="w-full max-w-sm mb-6"
+          className="w-full max-w-sm mb-4"
         >
           <div className="bg-uae-navy/80 backdrop-blur border border-uae-gold/20 rounded-2xl p-4"
             style={{ boxShadow: '0 0 30px rgba(200,168,64,0.15)' }}>
@@ -91,17 +145,17 @@ export default function LandingPage({ onStart, studentData }) {
               </div>
               <div className="flex-1">
                 <div className="font-bold text-white">{STUDENT.name}</div>
-                <div className="text-uae-gold text-sm">{STUDENT.grade} · Level {studentData.level}</div>
+                <div className="text-uae-gold text-sm">{gradeLabel} · Level {studentData.level}</div>
               </div>
               <div className="text-right">
                 <div className="text-uae-gold font-bold text-lg">{studentData.streak}🔥</div>
-                <div className="text-white/50 text-xs">day streak</div>
+                <div className="text-white/50 text-xs">{t('dayStreak')}</div>
               </div>
             </div>
 
             {/* XP Bar */}
             <div className="mb-1 flex justify-between text-xs text-white/60">
-              <span>XP Progress</span>
+              <span>{t('xpProgress')}</span>
               <span>{studentData.xp} / {XP_PER_LEVEL}</span>
             </div>
             <div className="h-3 bg-white/10 rounded-full overflow-hidden mb-4">
@@ -114,11 +168,12 @@ export default function LandingPage({ onStart, studentData }) {
             </div>
 
             {/* Stats row */}
-            <div className="grid grid-cols-3 gap-2">
+            <div className="grid grid-cols-4 gap-2">
               {[
-                { label: 'Total XP', value: studentData.xp.toLocaleString(), icon: '⚡', color: '#C8A840' },
-                { label: 'Stars', value: studentData.totalStars, icon: '⭐', color: '#FFD700' },
-                { label: 'Badges', value: studentData.badges.length, icon: '🏅', color: '#CE1126' },
+                { label: t('totalXP'), value: studentData.xp.toLocaleString(), icon: '⚡', color: '#C8A840' },
+                { label: t('stars'), value: studentData.totalStars, icon: '⭐', color: '#FFD700' },
+                { label: t('badges'), value: studentData.badges.length, icon: '🏅', color: '#CE1126' },
+                { label: t('pearls'), value: studentData.pearls ?? 0, icon: '🪙', color: '#7CB9E8' },
               ].map((stat, i) => (
                 <motion.div
                   key={stat.label}
@@ -127,9 +182,9 @@ export default function LandingPage({ onStart, studentData }) {
                   transition={{ delay: 1 + i * 0.1 }}
                   className="bg-white/5 rounded-xl p-2 text-center"
                 >
-                  <div className="text-xl mb-0.5">{stat.icon}</div>
-                  <div className="font-bold text-white text-sm">{stat.value}</div>
-                  <div className="text-white/40 text-xs">{stat.label}</div>
+                  <div className="text-lg mb-0.5">{stat.icon}</div>
+                  <div className="font-bold text-white text-xs">{stat.value}</div>
+                  <div className="text-white/40 text-xs leading-tight">{stat.label}</div>
                 </motion.div>
               ))}
             </div>
@@ -141,7 +196,7 @@ export default function LandingPage({ onStart, studentData }) {
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ delay: 1.2 }}
-          className="flex gap-2 mb-6"
+          className="flex gap-2 mb-4 flex-wrap justify-center"
         >
           {studentData.badges.map((badge, i) => (
             <motion.div
@@ -159,26 +214,47 @@ export default function LandingPage({ onStart, studentData }) {
           ))}
         </motion.div>
 
-        {/* CTA Button */}
-        <motion.button
+        {/* Action Buttons */}
+        <motion.div
           initial={{ opacity: 0, scale: 0.8 }}
           animate={{ opacity: 1, scale: 1 }}
           transition={{ type: 'spring', delay: 1.4 }}
-          whileHover={{ scale: 1.05 }}
-          whileTap={{ scale: 0.97 }}
-          onClick={onStart}
-          className="relative px-10 py-4 rounded-2xl text-xl font-bold text-white overflow-hidden btn-press"
-          style={{
-            background: 'linear-gradient(135deg, #009A44 0%, #006B30 100%)',
-            boxShadow: '0 0 30px rgba(0,154,68,0.5), inset 0 1px 0 rgba(255,255,255,0.2)',
-          }}
+          className="w-full max-w-sm space-y-2"
         >
-          <span className="relative z-10 flex items-center gap-2">
-            🚀 Start Your Journey
-          </span>
-          {/* Shimmer overlay */}
-          <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent -translate-x-full animate-shimmer" />
-        </motion.button>
+          <motion.button
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.97 }}
+            onClick={() => { playClick(); onStart(); }}
+            className="relative w-full px-10 py-4 rounded-2xl text-xl font-bold text-white overflow-hidden btn-press"
+            style={{
+              background: 'linear-gradient(135deg, #009A44 0%, #006B30 100%)',
+              boxShadow: '0 0 30px rgba(0,154,68,0.5), inset 0 1px 0 rgba(255,255,255,0.2)',
+            }}
+          >
+            <span className="relative z-10 flex items-center justify-center gap-2">
+              🚀 {t('startJourney')}
+            </span>
+            <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent -translate-x-full animate-shimmer" />
+          </motion.button>
+
+          {/* Quick links */}
+          <div className="flex gap-2">
+            <motion.button
+              whileTap={{ scale: 0.97 }}
+              onClick={() => { playClick(); onChangeCourse?.(); }}
+              className="flex-1 py-2.5 rounded-xl text-sm font-semibold text-uae-gold border border-uae-gold/30 hover:bg-uae-gold/5 transition-colors"
+            >
+              🗂️ {lang === 'ar' ? 'تغيير المادة' : 'Change Course'}
+            </motion.button>
+            <motion.button
+              whileTap={{ scale: 0.97 }}
+              onClick={() => { playClick(); onTeacherDashboard?.(); }}
+              className="flex-1 py-2.5 rounded-xl text-sm font-semibold text-white/50 border border-white/10 hover:bg-white/5 transition-colors"
+            >
+              👩‍🏫 {lang === 'ar' ? 'لوحة المعلم' : 'Teacher View'}
+            </motion.button>
+          </div>
+        </motion.div>
 
         <motion.p
           initial={{ opacity: 0 }}
@@ -186,7 +262,7 @@ export default function LandingPage({ onStart, studentData }) {
           transition={{ delay: 1.6 }}
           className="text-white/30 text-xs mt-3"
         >
-          UAE National Curriculum • Grade 8 Mathematics
+          {t('curriculum')} {course?.gradeNum ?? 8} · {lang === 'ar' ? (course?.subject === 'Mathematics' ? 'الرياضيات' : 'العلوم') : (course?.subject ?? 'Mathematics')}
         </motion.p>
       </div>
 
@@ -197,7 +273,7 @@ export default function LandingPage({ onStart, studentData }) {
         transition={{ duration: 1, delay: 0.5 }}
         className="relative z-10 w-full"
       >
-        <DubaiSkyline height={100} />
+        <DubaiSkyline height={90} />
       </motion.div>
 
       {/* UAE Flag Stripe at bottom */}

@@ -17,6 +17,22 @@ body {
   overflow-x: hidden;
 }
 
+/* Arabic font class */
+.font-arabic {
+  font-family: 'Tajawal', sans-serif;
+}
+
+/* RTL support */
+[dir="rtl"] .ltr-only {
+  display: none;
+}
+[dir="rtl"] .flex-row {
+  flex-direction: row-reverse;
+}
+[dir="ltr"] .rtl-only {
+  display: none;
+}
+
 .uae-pattern {
   background-image: 
     repeating-linear-gradient(
@@ -119,4 +135,22 @@ body {
 @keyframes countUp {
   from { transform: translateY(10px); opacity: 0; }
   to { transform: translateY(0); opacity: 1; }
+}
+
+/* Pearl shine animation */
+@keyframes pearlShine {
+  0%, 100% { filter: drop-shadow(0 0 4px rgba(200,168,64,0.5)); }
+  50% { filter: drop-shadow(0 0 12px rgba(200,168,64,0.9)); }
+}
+.pearl-shine {
+  animation: pearlShine 2.5s ease-in-out infinite;
+}
+
+/* Gold confetti burst */
+@keyframes confettiGold {
+  0% { transform: scale(0) rotate(0deg); opacity: 1; }
+  100% { transform: scale(3) rotate(180deg); opacity: 0; }
+}
+.confetti-gold {
+  animation: confettiGold 0.6s ease-out forwards;
 }

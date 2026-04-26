@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { UAEFlagStripe } from './UAEPatterns';
+import { useSound } from '../context/SoundContext';
 
 const OPTION_LETTERS = ['A', 'B', 'C', 'D'];
 
@@ -14,6 +15,7 @@ export default function QuizView({ module, onComplete, onBack }) {
   const [timerActive, setTimerActive] = useState(true);
   const [xpEarned, setXpEarned] = useState(0);
   const [showExplanation, setShowExplanation] = useState(false);
+  const { playCorrect, playWrong, playTimeUp } = useSound();
 
   const questions = module.quiz;
   const question = questions[current];
@@ -22,13 +24,14 @@ export default function QuizView({ module, onComplete, onBack }) {
   useEffect(() => {
     if (!timerActive || answered) return;
     if (timeLeft <= 0) {
+      playTimeUp();
       handleAnswer(null);
       return;
     }
     const timer = setInterval(() => setTimeLeft(t => t - 1), 1000);
     return () => clearInterval(timer);
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [timeLeft, timerActive, answered]);
+  }, [timeLeft, timerActive, answered]); // playTimeUp/handleAnswer intentionally excluded — stable callbacks
 
   useEffect(() => {
     setTimeLeft(30);
@@ -49,6 +52,12 @@ export default function QuizView({ module, onComplete, onBack }) {
     setXpEarned(prev => prev + xp);
     setScore(prev => prev + (isCorrect ? 1 : 0));
     setAnswers(prev => [...prev, { questionIdx: current, selected: idx, correct: isCorrect }]);
+
+    if (isCorrect) {
+      playCorrect();
+    } else {
+      playWrong();
+    }
 
     setTimeout(() => setShowExplanation(true), 400);
   };

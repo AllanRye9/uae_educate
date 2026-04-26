@@ -127,6 +127,203 @@ function LessonVisual({ type, color }) {
         <div className="text-2xl font-bold text-uae-green">x = 4 ✓</div>
       </div>
     ),
+    // ── Science Grade 4 visuals ──
+    ecosystem: (
+      <div className="p-4">
+        <div className="grid grid-cols-3 gap-2 text-center">
+          {['🏜️ Desert', '🌊 Marine', '🌴 Mangrove'].map(e => (
+            <div key={e} className="bg-white/5 rounded-xl p-3 text-sm text-white/70">{e}</div>
+          ))}
+        </div>
+        <div className="mt-3 flex items-center justify-center gap-3 text-2xl">
+          <span>🌱</span><span className="text-white/40 text-sm">+</span>
+          <span>☀️</span><span className="text-white/40 text-sm">+</span>
+          <span>💧</span><span className="text-white/40 text-sm">=</span>
+          <span>🌍</span>
+        </div>
+      </div>
+    ),
+    foodchain: (
+      <div className="p-4 text-center">
+        <div className="flex items-center justify-center gap-2 text-2xl flex-wrap">
+          <span>🌳</span>
+          <span className="text-uae-gold text-sm">→</span>
+          <span>🦌</span>
+          <span className="text-uae-gold text-sm">→</span>
+          <span>🐺</span>
+          <span className="text-uae-gold text-sm">→</span>
+          <span>🍂</span>
+        </div>
+        <div className="mt-2 text-xs text-white/40">
+          Producer → Primary → Secondary → Decomposer
+        </div>
+      </div>
+    ),
+    conservation: (
+      <div className="grid grid-cols-2 gap-3 p-4">
+        {['🦁 Arabian Oryx', '🐢 Sea Turtles', '🌴 Mangroves', '🌳 Ghaf Tree'].map(item => (
+          <div key={item} className="bg-white/5 rounded-xl p-3 text-center text-sm text-white/70">{item}</div>
+        ))}
+      </div>
+    ),
+    energy: (
+      <div className="grid grid-cols-3 gap-2 p-4 text-center">
+        {[['☀️', 'Light'], ['🔥', 'Heat'], ['⚡', 'Electrical'], ['🔊', 'Sound'], ['🏃', 'Kinetic'], ['⛽', 'Chemical']].map(([icon, label]) => (
+          <div key={label} className="bg-white/5 rounded-xl p-2">
+            <div className="text-2xl">{icon}</div>
+            <div className="text-white/50 text-xs mt-1">{label}</div>
+          </div>
+        ))}
+      </div>
+    ),
+    solar: (
+      <div className="p-4 text-center">
+        <div className="text-5xl mb-2 animate-float">☀️</div>
+        <div className="font-mono text-sm space-y-1">
+          <div className="text-white/70">Sunlight hits panel</div>
+          <div className="text-uae-gold/60 text-xs">↓</div>
+          <div className="text-white/70">Electrons energized</div>
+          <div className="text-uae-gold/60 text-xs">↓</div>
+          <div className="text-2xl font-bold text-uae-gold">⚡ Electricity!</div>
+        </div>
+      </div>
+    ),
+    saveenergy: (
+      <div className="grid grid-cols-2 gap-2 p-4">
+        {['💡 Switch off lights', '❄️ Set AC to 24°C', '🚿 Shorter showers', '📱 Unplug chargers'].map(tip => (
+          <div key={tip} className="bg-uae-green/10 border border-uae-green/20 rounded-xl p-2 text-xs text-white/70 text-center">{tip}</div>
+        ))}
+      </div>
+    ),
+    solarsystem: (
+      <div className="p-3 overflow-x-auto">
+        <div className="flex items-center gap-2 text-lg min-w-max mx-auto justify-center">
+          {['☀️', '☿', '♀️', '🌍', '♂️', '♃', '♄', '♅', '♆'].map((p, i) => (
+            <span key={i} style={{ fontSize: i === 0 ? 28 : 18 }}>{p}</span>
+          ))}
+        </div>
+        <div className="text-center text-xs text-white/40 mt-2">Our Solar System — 8 planets</div>
+      </div>
+    ),
+    hopemission: (
+      <div className="p-4 text-center">
+        <div className="text-5xl mb-2 animate-float">🚀</div>
+        <div className="text-uae-gold font-bold">مسبار الأمل</div>
+        <div className="text-white/60 text-sm">Hope Probe</div>
+        <div className="flex justify-center gap-4 mt-3 text-xs text-white/50">
+          <div>🇦🇪 UAE</div>
+          <div>→ 400M km →</div>
+          <div>🔴 Mars</div>
+        </div>
+      </div>
+    ),
+    stars: (
+      <div className="p-4 text-center">
+        <div className="text-4xl mb-2">✨🌟⭐🌠✨</div>
+        <div className="text-sm text-white/60">Arabic star names we still use today:</div>
+        <div className="grid grid-cols-2 gap-2 mt-2 text-xs">
+          <div className="bg-white/5 rounded-lg p-2"><span className="text-uae-gold">Betelgeuse</span><br /><span className="text-white/40">إبط الجوزاء</span></div>
+          <div className="bg-white/5 rounded-lg p-2"><span className="text-uae-gold">Aldebaran</span><br /><span className="text-white/40">الدبران</span></div>
+        </div>
+      </div>
+    ),
+    // ── Science Grade 8 visuals ──
+    cell: (
+      <div className="p-4 text-center">
+        <div className="text-5xl mb-2">🔬</div>
+        <div className="flex justify-center gap-4 text-xs">
+          <div className="bg-uae-green/10 border border-uae-green/20 rounded-lg p-2 text-white/70">Prokaryotic<br /><span className="text-white/40">No nucleus</span></div>
+          <div className="bg-uae-gold/10 border border-uae-gold/20 rounded-lg p-2 text-white/70">Eukaryotic<br /><span className="text-white/40">Has nucleus</span></div>
+        </div>
+      </div>
+    ),
+    organelles: (
+      <div className="grid grid-cols-2 gap-2 p-3 text-xs">
+        {[['🧠', 'Nucleus', 'DNA control'], ['⚡', 'Mitochondria', 'Energy (ATP)'], ['🏭', 'Ribosome', 'Proteins'], ['📦', 'Golgi', 'Packaging']].map(([icon, name, desc]) => (
+          <div key={name} className="bg-white/5 rounded-lg p-2 flex items-center gap-2">
+            <span className="text-xl">{icon}</span>
+            <div><div className="text-white/80 font-semibold">{name}</div><div className="text-white/40">{desc}</div></div>
+          </div>
+        ))}
+      </div>
+    ),
+    celldivision: (
+      <div className="p-4 text-center font-mono text-sm space-y-1">
+        <div className="text-uae-gold font-bold">PMAT</div>
+        {[['P', 'Prophase'], ['M', 'Metaphase'], ['A', 'Anaphase'], ['T', 'Telophase']].map(([letter, name]) => (
+          <div key={letter} className="flex justify-center gap-2 text-xs text-white/60">
+            <span className="text-uae-gold font-bold w-4">{letter}</span>
+            <span>{name}</span>
+          </div>
+        ))}
+      </div>
+    ),
+    atoms: (
+      <div className="p-4 text-center">
+        <div className="inline-block">
+          <div className="relative w-20 h-20 mx-auto">
+            <div className="absolute inset-0 flex items-center justify-center">
+              <div className="w-8 h-8 rounded-full bg-uae-navy border-2 border-uae-gold flex items-center justify-center text-xs font-bold text-uae-gold">p⊕n</div>
+            </div>
+            <div className="absolute inset-0 border-2 border-uae-gold/30 rounded-full" />
+          </div>
+        </div>
+        <div className="flex justify-center gap-4 mt-3 text-xs">
+          <div className="text-uae-red">⊕ Proton</div>
+          <div className="text-white/50">○ Neutron</div>
+          <div className="text-uae-gold">⊖ Electron</div>
+        </div>
+      </div>
+    ),
+    matter: (
+      <div className="flex justify-center gap-4 p-4">
+        {[['🧊', 'Solid', 'Fixed shape\n& volume'], ['💧', 'Liquid', 'Fixed volume\nnot shape'], ['💨', 'Gas', 'No fixed\nshape']].map(([icon, name, desc]) => (
+          <div key={name} className="text-center">
+            <div className="text-3xl mb-1">{icon}</div>
+            <div className="text-white/80 text-xs font-semibold">{name}</div>
+            <div className="text-white/40 text-xs">{desc}</div>
+          </div>
+        ))}
+      </div>
+    ),
+    reactions: (
+      <div className="p-4 text-center font-mono text-sm space-y-2">
+        <div className="text-white/70">2H₂ + O₂</div>
+        <div className="text-uae-gold/60 text-xs">chemical reaction →</div>
+        <div className="text-2xl font-bold text-uae-green">2H₂O 💧</div>
+        <div className="text-white/40 text-xs">Water!</div>
+      </div>
+    ),
+    newton: (
+      <div className="p-4 space-y-2">
+        {[['1st', 'Inertia: no force = no change'], ['2nd', 'F = ma'], ['3rd', 'Every action → equal & opposite reaction']].map(([law, desc]) => (
+          <div key={law} className="flex gap-2 text-xs items-start">
+            <span className="text-uae-gold font-bold whitespace-nowrap">{law} Law:</span>
+            <span className="text-white/70">{desc}</span>
+          </div>
+        ))}
+      </div>
+    ),
+    forces: (
+      <div className="grid grid-cols-2 gap-2 p-4 text-xs">
+        {[['🌍', 'Gravity'], ['🧲', 'Magnetic'], ['⚡', 'Electrostatic'], ['💨', 'Air Resistance']].map(([icon, name]) => (
+          <div key={name} className="bg-white/5 rounded-lg p-2 text-center">
+            <div className="text-2xl">{icon}</div>
+            <div className="text-white/60 mt-1">{name}</div>
+          </div>
+        ))}
+      </div>
+    ),
+    energy8: (
+      <div className="p-4 text-center space-y-2 text-sm">
+        <div className="flex justify-center gap-6">
+          <div className="text-center"><div className="text-3xl">🎢</div><div className="text-white/60 text-xs">Top = Max PE</div></div>
+          <div className="text-uae-gold/60 text-2xl">→</div>
+          <div className="text-center"><div className="text-3xl">🏎️</div><div className="text-white/60 text-xs">Bottom = Max KE</div></div>
+        </div>
+        <div className="text-uae-gold/80 text-xs">W = Force × Distance (Joules)</div>
+      </div>
+    ),
   };
 
   return (
