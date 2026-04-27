@@ -5,7 +5,7 @@
   "/course/[courseId]/path/page": "app/course/[courseId]/path/page.js",
   "/course/[courseId]/quiz/[moduleId]/page": "app/course/[courseId]/quiz/[moduleId]/page.js",
   "/page": "app/page.js",
-  "/results/page": "app/results/page.js",
   "/select/page": "app/select/page.js",
+  "/results/page": "app/results/page.js",
   "/teacher/page": "app/teacher/page.js"
 }
