@@ -1,0 +1,168 @@
+@import url('https://fonts.googleapis.com/css2?family=Tajawal:wght@300;400;500;700;800&family=Poppins:wght@300;400;500;600;700;800&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: 'Poppins', sans-serif;
+  background: #0D1B2A;
+  color: #ffffff;
+  overflow-x: hidden;
+}
+
+/* Arabic font class */
+.font-arabic {
+  font-family: 'Tajawal', sans-serif;
+}
+
+/* RTL support */
+[dir="rtl"] .ltr-only {
+  display: none;
+}
+[dir="rtl"] .flex-row {
+  flex-direction: row-reverse;
+}
+[dir="ltr"] .rtl-only {
+  display: none;
+}
+
+.uae-pattern {
+  background-image: 
+    repeating-linear-gradient(
+      45deg,
+      transparent,
+      transparent 10px,
+      rgba(200, 168, 64, 0.05) 10px,
+      rgba(200, 168, 64, 0.05) 20px
+    );
+}
+
+.shimmer-text {
+  background: linear-gradient(90deg, #C8A840 0%, #FFE57F 50%, #C8A840 100%);
+  background-size: 200% auto;
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  animation: shimmer 3s linear infinite;
+}
+
+.star-filled {
+  color: #FFD700;
+  filter: drop-shadow(0 0 4px #FFD700);
+}
+
+.xp-bar-fill {
+  background: linear-gradient(90deg, #009A44, #00D460);
+  box-shadow: 0 0 10px rgba(0, 154, 68, 0.6);
+  transition: width 1s ease-in-out;
+}
+
+.card-hover {
+  transition: all 0.3s ease;
+}
+.card-hover:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 8px 25px rgba(200, 168, 64, 0.3);
+}
+
+.path-line {
+  stroke-dasharray: 8 4;
+  animation: dash 20s linear infinite;
+}
+
+@keyframes dash {
+  to { stroke-dashoffset: -1000; }
+}
+
+.confetti-particle {
+  position: fixed;
+  width: 10px;
+  height: 10px;
+  border-radius: 2px;
+  animation: confettiFall linear forwards;
+  pointer-events: none;
+  z-index: 9999;
+}
+
+@keyframes confettiFall {
+  0% { transform: translateY(-100px) rotate(0deg); opacity: 1; }
+  100% { transform: translateY(100vh) rotate(720deg); opacity: 0; }
+}
+
+.lesson-card-locked {
+  background: linear-gradient(135deg, #1a2744 0%, #0D1B2A 100%);
+  opacity: 0.7;
+}
+.lesson-card-unlocked {
+  background: linear-gradient(135deg, #1a3a5c 0%, #1a2744 100%);
+}
+.lesson-card-completed {
+  background: linear-gradient(135deg, #003322 0%, #004433 100%);
+}
+
+.falcon-glow {
+  filter: drop-shadow(0 0 8px rgba(200, 168, 64, 0.8));
+}
+
+.btn-press {
+  transition: all 0.1s ease;
+}
+.btn-press:active {
+  transform: scale(0.97);
+}
+
+::-webkit-scrollbar {
+  width: 6px;
+}
+::-webkit-scrollbar-track {
+  background: #0D1B2A;
+}
+::-webkit-scrollbar-thumb {
+  background: #C8A840;
+  border-radius: 3px;
+}
+
+.counter-animate {
+  animation: countUp 0.5s ease-out forwards;
+}
+@keyframes countUp {
+  from { transform: translateY(10px); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
+}
+
+/* Pearl shine animation */
+@keyframes pearlShine {
+  0%, 100% { filter: drop-shadow(0 0 4px rgba(200,168,64,0.5)); }
+  50% { filter: drop-shadow(0 0 12px rgba(200,168,64,0.9)); }
+}
+.pearl-shine {
+  animation: pearlShine 2.5s ease-in-out infinite;
+}
+
+/* Gold confetti burst */
+@keyframes confettiGold {
+  0% { transform: scale(0) rotate(0deg); opacity: 1; }
+  100% { transform: scale(3) rotate(180deg); opacity: 0; }
+}
+.confetti-gold {
+  animation: confettiGold 0.6s ease-out forwards;
+}
+
+/* Float animation referenced by Tailwind custom animation */
+@keyframes float {
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(-10px); }
+}
+
+/* Shimmer animation used by shimmer-text and shimmer gradient */
+@keyframes shimmer {
+  0% { background-position: -200% center; }
+  100% { background-position: 200% center; }
+}

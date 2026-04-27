@@ -1,0 +1,11 @@
+{
+  "/_not-found/page": "app/_not-found/page.js",
+  "/course/[courseId]/lesson/[moduleId]/page": "app/course/[courseId]/lesson/[moduleId]/page.js",
+  "/course/[courseId]/page": "app/course/[courseId]/page.js",
+  "/course/[courseId]/path/page": "app/course/[courseId]/path/page.js",
+  "/course/[courseId]/quiz/[moduleId]/page": "app/course/[courseId]/quiz/[moduleId]/page.js",
+  "/page": "app/page.js",
+  "/results/page": "app/results/page.js",
+  "/select/page": "app/select/page.js",
+  "/teacher/page": "app/teacher/page.js"
+}

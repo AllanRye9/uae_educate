@@ -1,7 +1,11 @@
+'use client';
+
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { UAEFlagStripe } from './UAEPatterns';
+import DragDropQuiz from './DragDropQuiz';
 import { useSound } from '../context/SoundContext';
+import { calcStars, calcQuestionXP } from '../lib/gameLogic';
 
 const OPTION_LETTERS = ['A', 'B', 'C', 'D'];
 
@@ -20,9 +24,11 @@ export default function QuizView({ module, onComplete, onBack }) {
   const questions = module.quiz;
   const question = questions[current];
   const isLast = current === questions.length - 1;
+  const isMatching = question?.type === 'matching';
 
   useEffect(() => {
-    if (!timerActive || answered) return;
+    // No countdown timer for drag-and-drop questions
+    if (!timerActive || answered || isMatching) return;
     if (timeLeft <= 0) {
       playTimeUp();
       handleAnswer(null);
@@ -31,7 +37,7 @@ export default function QuizView({ module, onComplete, onBack }) {
     const timer = setInterval(() => setTimeLeft(t => t - 1), 1000);
     return () => clearInterval(timer);
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [timeLeft, timerActive, answered]); // playTimeUp/handleAnswer intentionally excluded — stable callbacks
+  }, [timeLeft, timerActive, answered, isMatching]);
 
   useEffect(() => {
     setTimeLeft(30);
@@ -48,7 +54,7 @@ export default function QuizView({ module, onComplete, onBack }) {
     setTimerActive(false);
 
     const isCorrect = idx === question.correct;
-    const xp = isCorrect ? Math.ceil(module.xpReward / questions.length) + (timeLeft > 20 ? 10 : 0) : 0;
+    const xp = isCorrect ? calcQuestionXP(module.xpReward, questions.length, timeLeft) : 0;
     setXpEarned(prev => prev + xp);
     setScore(prev => prev + (isCorrect ? 1 : 0));
     setAnswers(prev => [...prev, { questionIdx: current, selected: idx, correct: isCorrect }]);
@@ -62,17 +68,29 @@ export default function QuizView({ module, onComplete, onBack }) {
     setTimeout(() => setShowExplanation(true), 400);
   };
 
+  /** Called by DragDropQuiz when the matching question is answered */
+  const handleMatchingAnswer = (isCorrect) => {
+    if (answered) return;
+    setAnswered(true);
+    setTimerActive(false);
+    const xp = isCorrect ? calcQuestionXP(module.xpReward, questions.length, 0) : 0;
+    setXpEarned(prev => prev + xp);
+    setScore(prev => prev + (isCorrect ? 1 : 0));
+    setAnswers(prev => [...prev, { questionIdx: current, correct: isCorrect }]);
+    setTimeout(() => setShowExplanation(true), 400);
+  };
+
   const handleNext = () => {
+    const finalScore = answered && !isMatching && selected === question.correct
+      ? score
+      : score;
     if (isLast) {
-      const finalScore = score + (selected === question.correct ? 1 : 0);
-      const stars = finalScore >= questions.length ? 3
-        : finalScore >= Math.ceil(questions.length * 0.6) ? 2
-        : finalScore >= Math.ceil(questions.length * 0.4) ? 1 : 0;
+      const stars = calcStars(finalScore, questions.length);
       onComplete({
         score: finalScore,
         total: questions.length,
         stars,
-        xpEarned: xpEarned,
+        xpEarned,
         module,
         perfectScore: finalScore === questions.length,
       });
@@ -135,115 +153,150 @@ export default function QuizView({ module, onComplete, onBack }) {
               exit={{ opacity: 0, y: -30 }}
               transition={{ duration: 0.35 }}
             >
-              {/* Question card */}
-              <div
-                className="rounded-2xl p-5 mb-5 relative overflow-hidden"
-                style={{
-                  background: `linear-gradient(135deg, ${module.color}15, transparent)`,
-                  border: `1px solid ${module.color}30`,
-                }}
-              >
-                <div className="text-xs text-white/40 mb-2 uppercase tracking-wider">Question {current + 1}</div>
-                <p className="text-white text-lg font-semibold leading-snug">{question.q}</p>
-              </div>
-
-              {/* Options */}
-              <div className="space-y-3 mb-4">
-                {question.options.map((option, i) => {
-                  let style = {};
-
-                  if (answered) {
-                    if (i === question.correct) {
-                      style = { background: 'rgba(0,154,68,0.2)', border: '2px solid #009A44', boxShadow: '0 0 12px rgba(0,154,68,0.3)' };
-                    } else if (i === selected && i !== question.correct) {
-                      style = { background: 'rgba(206,17,38,0.2)', border: '2px solid #CE1126' };
-                    } else {
-                      style = { opacity: 0.4 };
-                    }
-                  }
-
-                  return (
-                    <motion.button
-                      key={i}
-                      initial={{ opacity: 0, x: -20 }}
-                      animate={{ opacity: 1, x: 0 }}
-                      transition={{ delay: i * 0.08 }}
-                      whileHover={!answered ? { scale: 1.02, x: 4 } : {}}
-                      whileTap={!answered ? { scale: 0.98 } : {}}
-                      onClick={() => handleAnswer(i)}
-                      disabled={answered}
-                      className="w-full flex items-center gap-3 p-4 rounded-xl text-left transition-all"
-                      style={{
-                        background: answered ? undefined : 'rgba(255,255,255,0.05)',
-                        border: answered ? undefined : '1px solid rgba(255,255,255,0.1)',
-                        cursor: answered ? 'default' : 'pointer',
-                        ...style,
-                      }}
-                    >
-                      <span
-                        className="w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold flex-shrink-0"
+              {/* ── Matching (drag-and-drop) question type ── */}
+              {isMatching ? (
+                <>
+                  <DragDropQuiz
+                    question={question}
+                    onAnswer={handleMatchingAnswer}
+                    moduleColor={module.color}
+                  />
+                  <AnimatePresence>
+                    {answered && (
+                      <motion.button
+                        initial={{ opacity: 0, y: 10 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        whileHover={{ scale: 1.02 }}
+                        whileTap={{ scale: 0.98 }}
+                        onClick={handleNext}
+                        className="w-full mt-4 py-3.5 rounded-xl font-bold text-sm"
                         style={{
-                          background: answered && i === question.correct ? '#009A44' :
-                            answered && i === selected && i !== question.correct ? '#CE1126' :
-                            'rgba(255,255,255,0.1)',
-                          color: 'white',
+                          background: isLast
+                            ? 'linear-gradient(135deg, #C8A840, #FFD700)'
+                            : `linear-gradient(135deg, ${module.color}, ${module.color}BB)`,
+                          color: isLast ? '#0D1B2A' : 'white',
+                          boxShadow: `0 4px 15px ${module.color}50`,
                         }}
                       >
-                        {answered && i === question.correct ? '✓' :
-                         answered && i === selected && i !== question.correct ? '✗' :
-                         OPTION_LETTERS[i]}
-                      </span>
-                      <span className="text-white/90 text-sm">{option}</span>
-                    </motion.button>
-                  );
-                })}
-              </div>
-
-              {/* Explanation */}
-              <AnimatePresence>
-                {showExplanation && (
-                  <motion.div
-                    initial={{ opacity: 0, height: 0, y: 10 }}
-                    animate={{ opacity: 1, height: 'auto', y: 0 }}
-                    exit={{ opacity: 0, height: 0 }}
-                    transition={{ duration: 0.4 }}
-                    className="overflow-hidden"
+                        {isLast ? '🏁 See Results' : 'Next Question →'}
+                      </motion.button>
+                    )}
+                  </AnimatePresence>
+                </>
+              ) : (
+                <>
+                  {/* ── MCQ question type (default) ── */}
+                  {/* Question card */}
+                  <div
+                    className="rounded-2xl p-5 mb-5 relative overflow-hidden"
+                    style={{
+                      background: `linear-gradient(135deg, ${module.color}15, transparent)`,
+                      border: `1px solid ${module.color}30`,
+                    }}
                   >
-                    <div
-                      className="rounded-xl p-4 mb-4"
-                      style={{
-                        background: selected === question.correct
-                          ? 'rgba(0,154,68,0.1)' : 'rgba(206,17,38,0.1)',
-                        border: `1px solid ${selected === question.correct ? '#009A44' : '#CE1126'}40`,
-                      }}
-                    >
-                      <div className="flex items-center gap-2 mb-2">
-                        <span className="text-lg">{selected === question.correct ? '🎉' : '💡'}</span>
-                        <span className="font-bold text-sm" style={{ color: selected === question.correct ? '#009A44' : '#CE1126' }}>
-                          {selected === question.correct ? 'Correct! Well done!' : "Not quite — here's why:"}
-                        </span>
-                      </div>
-                      <p className="text-white/80 text-sm leading-relaxed">{question.explanation}</p>
-                    </div>
+                    <div className="text-xs text-white/40 mb-2 uppercase tracking-wider">Question {current + 1}</div>
+                    <p className="text-white text-lg font-semibold leading-snug">{question.q}</p>
+                  </div>
 
-                    <motion.button
-                      whileHover={{ scale: 1.02 }}
-                      whileTap={{ scale: 0.98 }}
-                      onClick={handleNext}
-                      className="w-full py-3.5 rounded-xl font-bold text-sm"
-                      style={{
-                        background: isLast
-                          ? 'linear-gradient(135deg, #C8A840, #FFD700)'
-                          : `linear-gradient(135deg, ${module.color}, ${module.color}BB)`,
-                        color: isLast ? '#0D1B2A' : 'white',
-                        boxShadow: `0 4px 15px ${module.color}50`,
-                      }}
-                    >
-                      {isLast ? '🏁 See Results' : 'Next Question →'}
-                    </motion.button>
-                  </motion.div>
-                )}
-              </AnimatePresence>
+                  {/* Options */}
+                  <div className="space-y-3 mb-4">
+                    {question.options.map((option, i) => {
+                      let style = {};
+
+                      if (answered) {
+                        if (i === question.correct) {
+                          style = { background: 'rgba(0,154,68,0.2)', border: '2px solid #009A44', boxShadow: '0 0 12px rgba(0,154,68,0.3)' };
+                        } else if (i === selected && i !== question.correct) {
+                          style = { background: 'rgba(206,17,38,0.2)', border: '2px solid #CE1126' };
+                        } else {
+                          style = { opacity: 0.4 };
+                        }
+                      }
+
+                      return (
+                        <motion.button
+                          key={i}
+                          initial={{ opacity: 0, x: -20 }}
+                          animate={{ opacity: 1, x: 0 }}
+                          transition={{ delay: i * 0.08 }}
+                          whileHover={!answered ? { scale: 1.02, x: 4 } : {}}
+                          whileTap={!answered ? { scale: 0.98 } : {}}
+                          onClick={() => handleAnswer(i)}
+                          disabled={answered}
+                          className="w-full flex items-center gap-3 p-4 rounded-xl text-left transition-all"
+                          style={{
+                            background: answered ? undefined : 'rgba(255,255,255,0.05)',
+                            border: answered ? undefined : '1px solid rgba(255,255,255,0.1)',
+                            cursor: answered ? 'default' : 'pointer',
+                            ...style,
+                          }}
+                        >
+                          <span
+                            className="w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold flex-shrink-0"
+                            style={{
+                              background: answered && i === question.correct ? '#009A44' :
+                                answered && i === selected && i !== question.correct ? '#CE1126' :
+                                'rgba(255,255,255,0.1)',
+                              color: 'white',
+                            }}
+                          >
+                            {answered && i === question.correct ? '✓' :
+                             answered && i === selected && i !== question.correct ? '✗' :
+                             OPTION_LETTERS[i]}
+                          </span>
+                          <span className="text-white/90 text-sm">{option}</span>
+                        </motion.button>
+                      );
+                    })}
+                  </div>
+
+                  {/* Explanation */}
+                  <AnimatePresence>
+                    {showExplanation && (
+                      <motion.div
+                        initial={{ opacity: 0, height: 0, y: 10 }}
+                        animate={{ opacity: 1, height: 'auto', y: 0 }}
+                        exit={{ opacity: 0, height: 0 }}
+                        transition={{ duration: 0.4 }}
+                        className="overflow-hidden"
+                      >
+                        <div
+                          className="rounded-xl p-4 mb-4"
+                          style={{
+                            background: selected === question.correct
+                              ? 'rgba(0,154,68,0.1)' : 'rgba(206,17,38,0.1)',
+                            border: `1px solid ${selected === question.correct ? '#009A44' : '#CE1126'}40`,
+                          }}
+                        >
+                          <div className="flex items-center gap-2 mb-2">
+                            <span className="text-lg">{selected === question.correct ? '🎉' : '💡'}</span>
+                            <span className="font-bold text-sm" style={{ color: selected === question.correct ? '#009A44' : '#CE1126' }}>
+                              {selected === question.correct ? 'Correct! Well done!' : "Not quite — here's why:"}
+                            </span>
+                          </div>
+                          <p className="text-white/80 text-sm leading-relaxed">{question.explanation}</p>
+                        </div>
+
+                        <motion.button
+                          whileHover={{ scale: 1.02 }}
+                          whileTap={{ scale: 0.98 }}
+                          onClick={handleNext}
+                          className="w-full py-3.5 rounded-xl font-bold text-sm"
+                          style={{
+                            background: isLast
+                              ? 'linear-gradient(135deg, #C8A840, #FFD700)'
+                              : `linear-gradient(135deg, ${module.color}, ${module.color}BB)`,
+                            color: isLast ? '#0D1B2A' : 'white',
+                            boxShadow: `0 4px 15px ${module.color}50`,
+                          }}
+                        >
+                          {isLast ? '🏁 See Results' : 'Next Question →'}
+                        </motion.button>
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
+                </>
+              )}
 
               {/* Score dots */}
               <div className="flex gap-2 justify-center mt-4">
