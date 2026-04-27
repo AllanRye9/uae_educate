@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion } from 'framer-motion';
 import { XP_PER_LEVEL } from '../data/courseData';
 import { UAEFlagStripe, GeometricPattern } from './UAEPatterns';
 import { useLanguage } from '../context/LanguageContext';
@@ -358,7 +358,7 @@ export default function LearningPath({ studentData, modules, course, onSelectMod
           </div>
           {[
             { name: 'Fatima Al Hassan', xp: 1580, avatar: '👩', rank: 1 },
-            { name: 'Ahmed Al Mansouri', xp: 1240, avatar: '🦅', rank: 2, isYou: true },
+            { name: studentData.name ?? 'Ahmed Al Mansouri', xp: studentData.xp ?? 0, avatar: studentData.avatar ?? '🦅', rank: 2, isYou: true },
             { name: 'Omar Al Rashid', xp: 980, avatar: '👦', rank: 3 },
           ].map((player) => (
             <div

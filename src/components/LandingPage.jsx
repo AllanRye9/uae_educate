@@ -1,6 +1,5 @@
 import { motion } from 'framer-motion';
 import { FalconMascot, GeometricPattern, UAEFlagStripe, StarBurst, DubaiSkyline } from './UAEPatterns';
-import { STUDENT } from '../data/courseData';
 import { XP_PER_LEVEL } from '../data/courseData';
 import { useLanguage } from '../context/LanguageContext';
 import { useSound } from '../context/SoundContext';
@@ -141,10 +140,10 @@ export default function LandingPage({ onStart, onChangeCourse, onTeacherDashboar
             {/* Student info */}
             <div className="flex items-center gap-3 mb-4">
               <div className="w-14 h-14 rounded-full bg-uae-gold/20 border-2 border-uae-gold flex items-center justify-center text-2xl">
-                🦅
+                {studentData.avatar ?? '🦅'}
               </div>
               <div className="flex-1">
-                <div className="font-bold text-white">{STUDENT.name}</div>
+                <div className="font-bold text-white">{studentData.name ?? 'Student'}</div>
                 <div className="text-uae-gold text-sm">{gradeLabel} · Level {studentData.level}</div>
               </div>
               <div className="text-right">
