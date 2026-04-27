@@ -1,0 +1,106 @@
+{
+  "version": 3,
+  "pages404": true,
+  "caseSensitive": false,
+  "basePath": "",
+  "redirects": [
+    {
+      "source": "/:path+/",
+      "destination": "/:path+",
+      "internal": true,
+      "statusCode": 308,
+      "regex": "^(?:/((?:[^/]+?)(?:/(?:[^/]+?))*))/$"
+    }
+  ],
+  "headers": [],
+  "rewrites": {
+    "beforeFiles": [],
+    "afterFiles": [],
+    "fallback": []
+  },
+  "dynamicRoutes": [
+    {
+      "page": "/course/[courseId]",
+      "regex": "^/course/([^/]+?)(?:/)?$",
+      "routeKeys": {
+        "nxtPcourseId": "nxtPcourseId"
+      },
+      "namedRegex": "^/course/(?<nxtPcourseId>[^/]+?)(?:/)?$"
+    },
+    {
+      "page": "/course/[courseId]/lesson/[moduleId]",
+      "regex": "^/course/([^/]+?)/lesson/([^/]+?)(?:/)?$",
+      "routeKeys": {
+        "nxtPcourseId": "nxtPcourseId",
+        "nxtPmoduleId": "nxtPmoduleId"
+      },
+      "namedRegex": "^/course/(?<nxtPcourseId>[^/]+?)/lesson/(?<nxtPmoduleId>[^/]+?)(?:/)?$"
+    },
+    {
+      "page": "/course/[courseId]/path",
+      "regex": "^/course/([^/]+?)/path(?:/)?$",
+      "routeKeys": {
+        "nxtPcourseId": "nxtPcourseId"
+      },
+      "namedRegex": "^/course/(?<nxtPcourseId>[^/]+?)/path(?:/)?$"
+    },
+    {
+      "page": "/course/[courseId]/quiz/[moduleId]",
+      "regex": "^/course/([^/]+?)/quiz/([^/]+?)(?:/)?$",
+      "routeKeys": {
+        "nxtPcourseId": "nxtPcourseId",
+        "nxtPmoduleId": "nxtPmoduleId"
+      },
+      "namedRegex": "^/course/(?<nxtPcourseId>[^/]+?)/quiz/(?<nxtPmoduleId>[^/]+?)(?:/)?$"
+    }
+  ],
+  "staticRoutes": [
+    {
+      "page": "/",
+      "regex": "^/(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/(?:/)?$"
+    },
+    {
+      "page": "/_not-found",
+      "regex": "^/_not\\-found(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/_not\\-found(?:/)?$"
+    },
+    {
+      "page": "/results",
+      "regex": "^/results(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/results(?:/)?$"
+    },
+    {
+      "page": "/select",
+      "regex": "^/select(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/select(?:/)?$"
+    },
+    {
+      "page": "/teacher",
+      "regex": "^/teacher(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/teacher(?:/)?$"
+    }
+  ],
+  "dataRoutes": [],
+  "rsc": {
+    "header": "rsc",
+    "varyHeader": "rsc, next-router-state-tree, next-router-prefetch, next-router-segment-prefetch",
+    "prefetchHeader": "next-router-prefetch",
+    "didPostponeHeader": "x-nextjs-postponed",
+    "contentTypeHeader": "text/x-component",
+    "suffix": ".rsc",
+    "prefetchSuffix": ".prefetch.rsc",
+    "prefetchSegmentHeader": "next-router-segment-prefetch",
+    "prefetchSegmentSuffix": ".segment.rsc",
+    "prefetchSegmentDirSuffix": ".segments"
+  },
+  "rewriteHeaders": {
+    "pathHeader": "x-nextjs-rewritten-path",
+    "queryHeader": "x-nextjs-rewritten-query"
+  }
+}
