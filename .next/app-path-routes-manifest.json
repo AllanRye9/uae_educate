@@ -1,0 +1,11 @@
+{
+  "/_not-found/page": "/_not-found",
+  "/course/[courseId]/lesson/[moduleId]/page": "/course/[courseId]/lesson/[moduleId]",
+  "/course/[courseId]/page": "/course/[courseId]",
+  "/course/[courseId]/path/page": "/course/[courseId]/path",
+  "/course/[courseId]/quiz/[moduleId]/page": "/course/[courseId]/quiz/[moduleId]",
+  "/page": "/",
+  "/select/page": "/select",
+  "/results/page": "/results",
+  "/teacher/page": "/teacher"
+}

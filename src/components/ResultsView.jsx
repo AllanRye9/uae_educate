@@ -1,8 +1,12 @@
+'use client';
+
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { UAEFlagStripe, FalconMascot } from './UAEPatterns';
 import { BADGES, XP_PER_LEVEL, PEARLS_PER_STAR } from '../data/courseData';
 import { useSound } from '../context/SoundContext';
+import BadgeFlipCard from './BadgeFlipCard';
+import FloatUpPearl from './FloatUpPearl';
 
 function Confetti() {
   const particles = Array.from({ length: 40 }, (_, i) => ({
@@ -73,6 +77,7 @@ export default function ResultsView({ results, module, studentData, onContinue }
   const [showConfetti, setShowConfetti] = useState(results.stars >= 2);
   const [animateXP, setAnimateXP] = useState(false);
   const [newBadge, setNewBadge] = useState(null);
+  const [showPearls, setShowPearls] = useState(false);
   const { playStar, playXP } = useSound();
 
   const perf = PERFORMANCE_MSGS[results.stars] || PERFORMANCE_MSGS[0];
@@ -83,13 +88,16 @@ export default function ResultsView({ results, module, studentData, onContinue }
     const timer = setTimeout(() => {
       setAnimateXP(true);
       playXP();
-      if (results.stars > 0) setTimeout(playStar, 600);
+      if (results.stars > 0) {
+        setTimeout(playStar, 600);
+        if (pearlsEarned > 0) setTimeout(() => setShowPearls(true), 1200);
+      }
     }, 800);
     if (results.perfectScore) {
       setNewBadge(BADGES.quiz_master);
     }
     return () => clearTimeout(timer);
-  }, [results.perfectScore, results.stars, playXP, playStar]);
+  }, [results.perfectScore, results.stars, playXP, playStar, pearlsEarned]);
 
   useEffect(() => {
     if (showConfetti) {
@@ -101,6 +109,9 @@ export default function ResultsView({ results, module, studentData, onContinue }
   return (
     <div className="min-h-screen bg-uae-dark flex flex-col overflow-hidden">
       {showConfetti && <Confetti />}
+      {showPearls && (
+        <FloatUpPearl count={pearlsEarned > 0 ? Math.min(pearlsEarned, 8) : 4} onDone={() => setShowPearls(false)} />
+      )}
       <UAEFlagStripe height={5} />
 
       <div className="flex-1 overflow-y-auto">
@@ -218,20 +229,17 @@ export default function ResultsView({ results, module, studentData, onContinue }
             </div>
           </motion.div>
 
-          {/* New badge (if earned) */}
+          {/* New badge (if earned) – flip-card animation */}
           <AnimatePresence>
             {newBadge && results.perfectScore && (
               <motion.div
-                initial={{ opacity: 0, scale: 0.5, y: 20 }}
-                animate={{ opacity: 1, scale: 1, y: 0 }}
-                transition={{ type: 'spring', delay: 1.2 }}
-                className="bg-uae-navy/60 border border-uae-gold/30 rounded-2xl p-4 mb-4 text-center"
-                style={{ boxShadow: '0 0 20px rgba(200,168,64,0.2)' }}
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 1.2 }}
+                className="flex flex-col items-center mb-4"
               >
-                <div className="text-xs text-uae-gold/60 uppercase tracking-wider mb-2">🎊 New Badge Unlocked!</div>
-                <div className="text-4xl mb-1">{newBadge.icon}</div>
-                <div className="font-bold text-white">{newBadge.name}</div>
-                <div className="text-white/50 text-xs mt-1">{newBadge.desc}</div>
+                <div className="text-xs text-uae-gold/60 uppercase tracking-wider mb-3">🎊 New Badge Unlocked!</div>
+                <BadgeFlipCard badge={newBadge} delay={1.2} isNew />
               </motion.div>
             )}
           </AnimatePresence>

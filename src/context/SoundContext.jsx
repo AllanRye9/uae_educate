@@ -1,3 +1,5 @@
+'use client';
+
 import { createContext, useContext, useState, useCallback, useRef } from 'react';
 
 const SoundContext = createContext(null);

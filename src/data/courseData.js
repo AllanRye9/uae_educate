@@ -116,6 +116,16 @@ export const MODULES = [
       },
     ],
     quiz: [
+      {
+        type: 'matching',
+        q: 'Match each algebra term to its meaning:',
+        pairs: [
+          { left: 'Variable', right: 'A letter representing an unknown value (e.g. x)' },
+          { left: 'Constant', right: 'A fixed number that does not change (e.g. 7)' },
+          { left: 'Al-Jabr', right: 'Arabic word that gave us the word "Algebra"' },
+        ],
+        explanation: 'Algebra was invented by Al-Khwarizmi, using Arabic words. Variables like x can change, while constants like 7 always stay the same!',
+      },
       { q: "What does the word 'Algebra' come from?", options: ["Greek 'algebras'", "Arabic 'Al-Jabr'", "Latin 'algebra'", "Persian 'al-jabra'"], correct: 1, explanation: "Algebra comes from the Arabic word 'Al-Jabr' (الجبر), meaning 'reunion of broken parts'!" },
       { q: "Which of these is a variable?", options: ["15", "42", "x", "100"], correct: 2, explanation: "Variables are letters (like x) that represent unknown values." },
       { q: "In '3x + 7', what is the constant?", options: ["3", "x", "7", "3x"], correct: 2, explanation: "7 is a constant — it's a fixed number that doesn't change." },

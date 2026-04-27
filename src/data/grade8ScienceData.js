@@ -22,7 +22,7 @@ export const GRADE8_SCIENCE_MODULES = [
         id: "s8-1-2",
         title: "Cell Organelles",
         content: `Cell organelles are like the **organs of a cell** — each has a specific job!\n\n🧠 **Nucleus** — Control center; contains DNA\n⚡ **Mitochondria** — Powerhouse; produces energy (ATP)\n🏭 **Ribosomes** — Make proteins\n📦 **Golgi Apparatus** — Packages and ships proteins\n💧 **Vacuole** — Storage (water, waste)\n🌿 **Chloroplasts** — In plant cells; perform photosynthesis\n🛡️ **Cell Wall** — In plant cells; rigid outer support\n\n**Remember:** Animal cells have mitochondria but NOT chloroplasts or cell walls!`,
-        visual: "organelles",
+        visual: "cell_interactive",
         xp: 50,
       },
       {
@@ -34,6 +34,17 @@ export const GRADE8_SCIENCE_MODULES = [
       },
     ],
     quiz: [
+      {
+        type: 'matching',
+        q: 'Match each cell organelle with its function:',
+        pairs: [
+          { left: 'Nucleus', right: 'Contains DNA and controls cell activity' },
+          { left: 'Mitochondria', right: 'Produces energy (ATP) for the cell' },
+          { left: 'Vacuole', right: 'Stores water, waste and nutrients' },
+          { left: 'Cell Membrane', right: 'Controls what enters and leaves the cell' },
+        ],
+        explanation: 'Each organelle has a unique job — like organs in a body! The nucleus is the brain, mitochondria are the batteries, vacuoles are the storage room, and the membrane is the security door.',
+      },
       { q: "What is the powerhouse of the cell?", options: ["Nucleus", "Ribosome", "Mitochondria", "Vacuole"], correct: 2, explanation: "Mitochondria produce ATP (energy) — they are the powerhouse of the cell!" },
       { q: "Which organelle contains the cell's DNA?", options: ["Mitochondria", "Nucleus", "Golgi Apparatus", "Ribosome"], correct: 1, explanation: "The nucleus is the control center of the cell and contains DNA." },
       { q: "What organelle do ONLY plant cells have?", options: ["Mitochondria", "Nucleus", "Ribosomes", "Chloroplasts"], correct: 3, explanation: "Chloroplasts are found only in plant cells — they perform photosynthesis to make food from sunlight!" },

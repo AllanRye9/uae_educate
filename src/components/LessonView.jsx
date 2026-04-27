@@ -1,6 +1,10 @@
+'use client';
+
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { UAEFlagStripe } from './UAEPatterns';
+import CellDiagram from './CellDiagram';
+import WordScramble from './WordScramble';
 
 function renderContent(text) {
   return text.split('\n').map((line, i) => {
@@ -25,7 +29,7 @@ function renderContent(text) {
   });
 }
 
-function LessonVisual({ type, color }) {
+function LessonVisual({ type, color, scrambleWord, scrambleHint }) {
   const visuals = {
     book: (
       <div className="flex items-center justify-center gap-6 p-6">
@@ -326,6 +330,29 @@ function LessonVisual({ type, color }) {
     ),
   };
 
+  // Special interactive visuals that render outside the static map
+  if (type === 'cell_interactive') {
+    return (
+      <div
+        className="rounded-2xl mb-4 overflow-hidden"
+        style={{ background: `linear-gradient(135deg, ${color}15, ${color}05)`, border: `1px solid ${color}30` }}
+      >
+        <CellDiagram />
+      </div>
+    );
+  }
+
+  if (type === 'scramble' && scrambleWord) {
+    return (
+      <div
+        className="rounded-2xl mb-4 overflow-hidden"
+        style={{ background: `linear-gradient(135deg, ${color}15, ${color}05)`, border: `1px solid ${color}30` }}
+      >
+        <WordScramble word={scrambleWord} hint={scrambleHint} />
+      </div>
+    );
+  }
+
   return (
     <div
       className="rounded-2xl mb-4 overflow-hidden"
@@ -453,7 +480,12 @@ export default function LessonView({ module, onStartQuiz, onBack }) {
               </div>
 
               {/* Visual */}
-              <LessonVisual type={lesson.visual} color={module.color} />
+              <LessonVisual
+                type={lesson.visual}
+                color={module.color}
+                scrambleWord={lesson.scrambleWord}
+                scrambleHint={lesson.scrambleHint}
+              />
 
               {/* Content */}
               <div className="bg-uae-navy/50 rounded-2xl p-4 border border-white/5 text-white/85 text-sm leading-relaxed">

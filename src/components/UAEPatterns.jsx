@@ -1,3 +1,5 @@
+'use client';
+
 export function FalconMascot({ size = 120, animated = true }) {
   return (
     <svg
